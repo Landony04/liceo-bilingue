@@ -27,14 +27,4 @@ const login = async (req, res) => {
   }
 };
 
-const profile = (req, res) => {
-  const { user } = req;
-
-  res.json(user);
-};
-
-const register = (req, res) => {
-  res.send("Desde API/USERS/REGISTER");
-};
-
-export { login, profile, register };
+export { login };
