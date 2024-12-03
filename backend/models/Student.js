@@ -15,6 +15,11 @@ const studentSchema = mongoose.Schema({
     unique: true,
     required: true,
   },
+  phoneNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   grade: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

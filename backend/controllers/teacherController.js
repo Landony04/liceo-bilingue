@@ -55,7 +55,7 @@ const updateTeacher = async (req, res) => {
   teacher.firstName = req.body.firstName || teacher.firstName;
   teacher.lastName = req.body.lastName || teacher.lastName;
   teacher.phoneNumber = req.body.phoneNumber || teacher.phoneNumber;
-  teacher.curses = req.body.curses || teacher.curses;
+  teacher.courses = req.body.courses || teacher.courses;
   teacher.grades = req.body.grades || teacher.grades;
 
   try {
@@ -84,7 +84,7 @@ const deleteTeacher = async (req, res) => {
 
   try {
     await teacher.deleteOne();
-    res.status(200).json({ message: "Maestro eliminado exitosamente" });
+    return res.status(200).json({ message: "Maestro eliminado exitosamente" });
   } catch (error) {
     const newError = new Error("Error al eliminar el maestro");
     return res.status(500).json({ message: newError.message });
