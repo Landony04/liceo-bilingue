@@ -3,6 +3,8 @@ import connectDb from "./config/db.js";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
+import teacherRoutes from "./routes/teacherRoutes.js";
+import directorRoutes from "./routes/directorRoutes.js";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +20,12 @@ app.use("/api", userRoutes);
 
 // Path for student
 app.use("/api/student", studentRoutes);
+
+// Path for teacher
+app.use("/api/teacher", teacherRoutes);
+
+//Path for director
+app.use("/api/director", directorRoutes);
 
 // Get port for default in server
 const PORT = process.env.PORT || 4000;

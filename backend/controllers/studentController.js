@@ -31,9 +31,15 @@ const addStudent = async (req, res) => {
 };
 
 const getStudentProfile = async (req, res) => {
-  const { student } = req;
+  const { id } = req.params;
+  const student = await Student.findById(id);
 
-  res.json(student);
+  if (!student) {
+    const error = new Error("Estudiante no encontrado");
+    return res.status(400).json({ message: error.message });
+  }
+
+  return res.status(200).json(student);
 };
 
 export { addStudent, getStudentProfile };
