@@ -43,12 +43,17 @@ const getStudentProfile = async (req, res) => {
 };
 
 const updateStudent = async (req, res) => {
-  const { id } = req.params;
-  const student = await Student.findById(id);
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
 
-  if (!student) {
-    const error = new Error("El estudiante no existe");
-    return res.status(400).json({ message: error.message });
+    if (!student) {
+      const error = new Error("El estudiante no existe");
+      return res.status(400).json({ message: error.message });
+    }
+  } catch (error) {
+    const newError = new Error("El estudiante no existe");
+    return res.status(400).json({ message: newError.message });
   }
 
   // Update properties
@@ -76,12 +81,17 @@ const updateStudent = async (req, res) => {
 };
 
 const deleteStudent = async (req, res) => {
-  const { id } = req.params;
-  const student = await Student.findById(id);
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
 
-  if (!student) {
-    const error = new Error("El estudiante no existe");
-    return res.status(400).json({ message: error.message });
+    if (!student) {
+      const error = new Error("El estudiante no existe");
+      return res.status(400).json({ message: error.message });
+    }
+  } catch (error) {
+    const newError = new Error("El estudiante no existe");
+    return res.status(400).json({ message: newError.message });
   }
 
   try {
