@@ -3,6 +3,12 @@ import Teacher from "../models/Teacher.js";
 const addTeacher = async (req, res) => {
   const { email } = req.body;
 
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
+  }
+
   // Validate if user exist
   const teacherExist = await Teacher.findOne({ email });
 
@@ -32,6 +38,13 @@ const addTeacher = async (req, res) => {
 
 const getTeacherProfile = async (req, res) => {
   const { id } = req.params;
+
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
+  }
+
   const teacher = await Teacher.findById(id);
 
   if (!teacher) {
@@ -44,6 +57,13 @@ const getTeacherProfile = async (req, res) => {
 
 const updateTeacher = async (req, res) => {
   const { id } = req.params;
+
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
+  }
+
   const teacher = await Teacher.findById(id);
 
   if (!teacher) {
@@ -66,6 +86,9 @@ const updateTeacher = async (req, res) => {
       // Get error specific messages
       const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({ message: "Datos inválidos", errors });
+    } else if (error.name === "CastError") {
+      // Get error specific messages
+      return res.status(400).json({ message: "Estudiante no encontrado" });
     }
 
     const newError = new Error("Error al actualizar el maestro");
@@ -75,17 +98,28 @@ const updateTeacher = async (req, res) => {
 
 const deleteTeacher = async (req, res) => {
   const { id } = req.params;
-  const teacher = await Teacher.findById(id);
 
-  if (!teacher) {
-    const error = new Error("Maestro no encontrado");
-    return res.status(400).json({ message: error.message });
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
   }
 
   try {
+    const teacher = await Teacher.findById(id);
+
+    if (!teacher) {
+      const error = new Error("Maestro no encontrado");
+      return res.status(400).json({ message: error.message });
+    }
+
     await teacher.deleteOne();
     return res.status(200).json({ message: "Maestro eliminado exitosamente" });
   } catch (error) {
+    if (error.name === "CastError") {
+      // Get error specific messages
+      return res.status(400).json({ message: "Estudiante no encontrado" });
+    }
     const newError = new Error("Error al eliminar el maestro");
     return res.status(500).json({ message: newError.message });
   }

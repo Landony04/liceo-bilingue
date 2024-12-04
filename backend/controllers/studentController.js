@@ -3,6 +3,12 @@ import Student from "../models/Student.js";
 const addStudent = async (req, res) => {
   const { email } = req.body;
 
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
+  }
+
   // Validate if user exist
   const userExist = await Student.findOne({ email });
 
@@ -32,19 +38,44 @@ const addStudent = async (req, res) => {
 
 const getStudentProfile = async (req, res) => {
   const { id } = req.params;
-  const student = await Student.findById(id);
 
-  if (!student) {
-    const error = new Error("Estudiante no encontrado");
-    return res.status(400).json({ message: error.message });
+  // Validar si el usuario tiene rol de "director"
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
   }
 
-  return res.status(200).json(student);
+  try {
+    const student = await Student.findById(id);
+
+    if (!student) {
+      const error = new Error("Estudiante no encontrado");
+      return res.status(400).json({ message: error.message });
+    }
+
+    return res.status(200).json(student);
+  } catch (error) {
+    if (error.name === "CastError") {
+      // Get error specific messages
+      return res.status(400).json({ message: "Estudiante no encontrado" });
+    }
+
+    const newError = new Error("Error al obtener el estudiante");
+    return res.status(500).json({ message: newError.message });
+  }
 };
 
 const updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (req.user.role !== "director") {
+      return res
+        .status(403)
+        .json({ message: "No tienes permisos para esta acción" });
+    }
+
     const student = await Student.findById(id);
 
     if (!student) {
@@ -83,22 +114,28 @@ const updateStudent = async (req, res) => {
 const deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (req.user.role !== "director") {
+      return res
+        .status(403)
+        .json({ message: "No tienes permisos para esta acción" });
+    }
+
     const student = await Student.findById(id);
 
     if (!student) {
       const error = new Error("El estudiante no existe");
       return res.status(400).json({ message: error.message });
     }
-  } catch (error) {
-    const newError = new Error("El estudiante no existe");
-    return res.status(400).json({ message: newError.message });
-  }
 
-  try {
     await student.deleteOne();
     return res.status(200).json({ message: "Alumno eliminado exitosamente " });
   } catch (error) {
-    const newError = new Error("Error al eliminar el estudiante");
+    if (error.name === "CastError") {
+      // Get error specific messages
+      return res.status(400).json({ message: "Estudiante no encontrado" });
+    }
+    const newError = new Error("Error al eliminar un estudiante");
     return res.status(500).json({ message: newError.message });
   }
 };

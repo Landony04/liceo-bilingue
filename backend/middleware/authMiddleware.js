@@ -13,6 +13,11 @@ const checkAuth = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select("-password -token");
 
+      req.user = {
+        id: decoded.id,
+        role: decoded.role,
+      };
+
       return next();
     } catch (error) {
       const newError = new Error("Token no Válido");

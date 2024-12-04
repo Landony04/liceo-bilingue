@@ -17,7 +17,7 @@ const login = async (req, res) => {
       _id: user._id,
       email: user.email,
       name: `${user.firstName} ${user.lastName}`,
-      token: generateJWT(user._id),
+      token: generateJWT(user._id, user.role),
     });
   } else {
     const error = new Error("El password es incorrecto");
@@ -29,6 +29,12 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   const { email } = req.body;
+
+  if (req.user.role !== "director") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permisos para esta acción" });
+  }
 
   // Validate if user exist
   const userExist = await User.findOne({ email });
