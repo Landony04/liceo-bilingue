@@ -5,6 +5,7 @@ import userRoutes from "./routes/userRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import directorRoutes from "./routes/directorRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
 
 const app = express();
 app.use(express.json());
@@ -26,6 +27,9 @@ app.use("/api/teacher", teacherRoutes);
 
 //Path for director
 app.use("/api/director", directorRoutes);
+
+//Path for course
+app.use("/api/course", courseRoutes);
 
 // Get port for default in server
 const PORT = process.env.PORT || 4000;
