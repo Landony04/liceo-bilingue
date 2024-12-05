@@ -45,14 +45,24 @@ const getTeacherProfile = async (req, res) => {
       .json({ message: "No tienes permisos para esta acción" });
   }
 
-  const teacher = await Teacher.findById(id);
+  try {
+    const teacher = await Teacher.findById(id);
 
-  if (!teacher) {
-    const error = new Error("Maestro no encontrado");
-    return res.status(400).json({ message: error.message });
+    if (!teacher) {
+      const error = new Error("Maestro no encontrado");
+      return res.status(400).json({ message: error.message });
+    }
+
+    return res.status(200).json(teacher);
+  } catch (error) {
+    if (error.name === "CastError") {
+      // Get error specific messages
+      return res.status(400).json({ message: "Maestro no encontrado" });
+    }
+
+    const newError = new Error("Error al obtener el maestro");
+    return res.status(500).json({ message: newError.message });
   }
-
-  res.status(200).json(teacher);
 };
 
 const updateTeacher = async (req, res) => {
@@ -64,21 +74,21 @@ const updateTeacher = async (req, res) => {
       .json({ message: "No tienes permisos para esta acción" });
   }
 
-  const teacher = await Teacher.findById(id);
-
-  if (!teacher) {
-    const error = new Error("Maestro no encontrado");
-    return res.status(400).json({ message: error.message });
-  }
-
-  // Update properties
-  teacher.firstName = req.body.firstName || teacher.firstName;
-  teacher.lastName = req.body.lastName || teacher.lastName;
-  teacher.phoneNumber = req.body.phoneNumber || teacher.phoneNumber;
-  teacher.courses = req.body.courses || teacher.courses;
-  teacher.grades = req.body.grades || teacher.grades;
-
   try {
+    const teacher = await Teacher.findById(id);
+
+    if (!teacher) {
+      const error = new Error("Maestro no encontrado");
+      return res.status(400).json({ message: error.message });
+    }
+
+    // Update properties
+    teacher.firstName = req.body.firstName || teacher.firstName;
+    teacher.lastName = req.body.lastName || teacher.lastName;
+    teacher.phoneNumber = req.body.phoneNumber || teacher.phoneNumber;
+    teacher.courses = req.body.courses || teacher.courses;
+    teacher.grades = req.body.grades || teacher.grades;
+
     const updatedTeacher = await teacher.save();
     return res.status(200).json(updatedTeacher);
   } catch (error) {
@@ -88,7 +98,7 @@ const updateTeacher = async (req, res) => {
       return res.status(400).json({ message: "Datos inválidos", errors });
     } else if (error.name === "CastError") {
       // Get error specific messages
-      return res.status(400).json({ message: "Estudiante no encontrado" });
+      return res.status(400).json({ message: "Maestro no encontrado" });
     }
 
     const newError = new Error("Error al actualizar el maestro");
@@ -118,7 +128,7 @@ const deleteTeacher = async (req, res) => {
   } catch (error) {
     if (error.name === "CastError") {
       // Get error specific messages
-      return res.status(400).json({ message: "Estudiante no encontrado" });
+      return res.status(400).json({ message: "Maestro no encontrado" });
     }
     const newError = new Error("Error al eliminar el maestro");
     return res.status(500).json({ message: newError.message });
