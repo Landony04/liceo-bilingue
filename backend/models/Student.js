@@ -15,6 +15,11 @@ const studentSchema = mongoose.Schema({
     unique: true,
     required: true,
   },
+  phoneNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   grade: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -30,16 +35,16 @@ const studentSchema = mongoose.Schema({
     {
       month: {
         type: String,
-        required: true,
+        required: false,
       },
       year: {
         type: Number,
-        required: true,
+        required: false,
       },
       status: {
         type: String,
         enum: ["pagado", "moroso"],
-        required: true,
+        required: false,
       },
       dateRegister: {
         type: Date,
