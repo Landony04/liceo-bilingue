@@ -27,7 +27,7 @@ const checkAuth = async (req, res, next) => {
 
   if (!token) {
     const error = new Error("Token no Válido o inexistente");
-    res.status(403).json({ message: error.message });
+    return res.status(403).json({ message: error.message });
   }
 
   next();
